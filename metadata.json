@@ -1,0 +1,6 @@
+{
+  "name": "My Hub",
+  "description": "Personal workspace and daily organizer featuring dashboard overview, tasks, habits tracker, notes, and productivity analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

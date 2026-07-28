@@ -1,11 +1,18 @@
-<div align="center">
+# My Hub - Personal Workspace & Daily Organizer
 
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+A modern, high-fidelity Android application built with Kotlin, Jetpack Compose, and Room Database.
 
-  <h1>Built with AI Studio</h2>
+## Features
 
-  <p>The fastest path from prompt to production with Gemini.</p>
+- **Daily Overview**: Interactive dashboard with real-time completion progress, date, and quick stats.
+- **Task Management**: Categorized task list with priority indicators (High, Medium, Low), filter chips, and completion toggles.
+- **Habit Tracker**: Daily habit check-ins with flame streak counters and target tracking.
+- **Quick Notes & Ideas**: Searchable notes with pinning support, category tags, and instant search filter.
+- **Productivity Analytics**: Visual completion progress indicators, habit consistency stats, and dynamic productivity score.
 
-  <a href="https://aistudio.google.com/apps">Start building</a>
+## Architecture & Tech Stack
 
-</div>
+- **UI Framework**: Jetpack Compose (Material Design 3)
+- **Database**: Room Database with KSP and Reactive Coroutine Flow
+- **Navigation**: Jetpack Navigation Compose with edge-to-edge layout
+- **Language**: Kotlin 2.0+
