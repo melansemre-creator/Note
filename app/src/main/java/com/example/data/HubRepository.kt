@@ -14,6 +14,7 @@ class HubRepository(
     suspend fun insertTask(task: Task) = taskDao.insertTask(task)
     suspend fun updateTask(task: Task) = taskDao.updateTask(task)
     suspend fun deleteTask(task: Task) = taskDao.deleteTask(task)
+    suspend fun deleteCompletedTasks() = taskDao.deleteCompletedTasks()
 
     suspend fun insertHabit(habit: Habit) = habitDao.insertHabit(habit)
     suspend fun updateHabit(habit: Habit) = habitDao.updateHabit(habit)

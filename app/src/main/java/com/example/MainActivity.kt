@@ -45,11 +45,11 @@ class MainActivity : ComponentActivity() {
 }
 
 sealed class Screen(val route: String, val title: String, val icon: ImageVector) {
-    object Home : Screen("home", "Overview", Icons.Default.Dashboard)
-    object Tasks : Screen("tasks", "Tasks", Icons.Default.TaskAlt)
-    object Habits : Screen("habits", "Habits", Icons.Default.LocalFireDepartment)
-    object Notes : Screen("notes", "Notes", Icons.Default.StickyNote2)
-    object Analytics : Screen("analytics", "Analytics", Icons.Default.Insights)
+    object Home : Screen("home", "Genel Bakış", Icons.Default.Dashboard)
+    object Tasks : Screen("tasks", "Görevler", Icons.Default.TaskAlt)
+    object Habits : Screen("habits", "Alışkanlıklar", Icons.Default.LocalFireDepartment)
+    object Notes : Screen("notes", "Notlar", Icons.Default.StickyNote2)
+    object Analytics : Screen("analytics", "Analiz", Icons.Default.Insights)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -141,14 +141,17 @@ fun MainAppScreen(viewModel: MainViewModel) {
                 TasksScreen(
                     tasks = tasks,
                     onAddTask = { title, category, priority -> viewModel.addTask(title, category, priority) },
+                    onEditTask = { viewModel.updateTask(it) },
                     onToggleTask = { viewModel.toggleTaskCompleted(it) },
-                    onDeleteTask = { viewModel.deleteTask(it) }
+                    onDeleteTask = { viewModel.deleteTask(it) },
+                    onClearCompleted = { viewModel.clearCompletedTasks() }
                 )
             }
             composable(Screen.Habits.route) {
                 HabitsScreen(
                     habits = habits,
                     onAddHabit = { title, category -> viewModel.addHabit(title, category) },
+                    onEditHabit = { viewModel.updateHabit(it) },
                     onToggleCheckIn = { viewModel.toggleHabitCheckIn(it) },
                     onDeleteHabit = { viewModel.deleteHabit(it) }
                 )
@@ -157,6 +160,7 @@ fun MainAppScreen(viewModel: MainViewModel) {
                 NotesScreen(
                     notes = notes,
                     onAddNote = { title, content, category, isPinned -> viewModel.addNote(title, content, category, isPinned) },
+                    onEditNote = { viewModel.updateNote(it) },
                     onTogglePin = { viewModel.toggleNotePinned(it) },
                     onDeleteNote = { viewModel.deleteNote(it) }
                 )

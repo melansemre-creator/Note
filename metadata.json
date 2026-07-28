@@ -1,6 +1,6 @@
 {
-  "name": "My Hub",
-  "description": "Personal workspace and daily organizer featuring dashboard overview, tasks, habits tracker, notes, and productivity analytics.",
+  "name": "Not ve İş Takip",
+  "description": "Not alma, görev ve iş takibi, alışkanlık izleme ve verimlilik analitiği sunan kişisel çalışma alanı uygulaması.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

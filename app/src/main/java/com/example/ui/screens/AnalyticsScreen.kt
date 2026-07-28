@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,18 +28,18 @@ fun AnalyticsScreen(
     notes: List<Note>
 ) {
     val totalTasks = tasks.size
-    val completedTasks = tasks.count { it.isCompleted }
-    val taskCompletionPct = if (totalTasks > 0) (completedTasks.toFloat() / totalTasks) else 0f
+    val completedTasks = remember(tasks) { tasks.count { it.isCompleted } }
+    val taskCompletionPct = remember(totalTasks, completedTasks) { if (totalTasks > 0) (completedTasks.toFloat() / totalTasks) else 0f }
 
     val totalHabits = habits.size
-    val completedHabitsToday = habits.count { it.completedToday }
-    val habitCompletionPct = if (totalHabits > 0) (completedHabitsToday.toFloat() / totalHabits) else 0f
+    val completedHabitsToday = remember(habits) { habits.count { it.completedToday } }
+    val habitCompletionPct = remember(totalHabits, completedHabitsToday) { if (totalHabits > 0) (completedHabitsToday.toFloat() / totalHabits) else 0f }
 
     val totalNotes = notes.size
-    val pinnedNotesCount = notes.count { it.isPinned }
+    val pinnedNotesCount = remember(notes) { notes.count { it.isPinned } }
 
     // Overall Productivity Score out of 100
-    val productivityScore = ((taskCompletionPct * 60) + (habitCompletionPct * 40)).toInt()
+    val productivityScore = remember(taskCompletionPct, habitCompletionPct) { ((taskCompletionPct * 60) + (habitCompletionPct * 40)).toInt() }
 
     LazyColumn(
         modifier = Modifier
@@ -61,7 +62,7 @@ fun AnalyticsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Productivity Score",
+                        text = "Verimlilik Puanı",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
@@ -98,9 +99,9 @@ fun AnalyticsScreen(
 
                     Text(
                         text = when {
-                            productivityScore >= 80 -> "🌟 Exceptional Focus & Consistency!"
-                            productivityScore >= 50 -> "👍 Good Momentum! Keep pushing forward."
-                            else -> "⚡ Small steps make big changes. Start a task now!"
+                            productivityScore >= 80 -> "🌟 Harika Odaklanma ve İstikrar!"
+                            productivityScore >= 50 -> "👍 İyi Bir İvme! Devam Edin."
+                            else -> "⚡ Küçük adımlar büyük değişimler yaratır. Hemen başlayın!"
                         },
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
@@ -113,7 +114,7 @@ fun AnalyticsScreen(
         // Detailed Metrics Grid
         item {
             Text(
-                text = "Performance Breakdown",
+                text = "Performans Analizi",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -121,8 +122,8 @@ fun AnalyticsScreen(
 
         item {
             MetricProgressCard(
-                title = "Tasks Completion Rate",
-                valueText = "$completedTasks / $totalTasks completed",
+                title = "Görev Tamamlama Oranı",
+                valueText = "$completedTasks / $totalTasks tamamlandı",
                 percentage = taskCompletionPct,
                 icon = Icons.Default.TaskAlt,
                 color = MaterialTheme.colorScheme.primary
@@ -131,12 +132,84 @@ fun AnalyticsScreen(
 
         item {
             MetricProgressCard(
-                title = "Habit Check-In Rate",
-                valueText = "$completedHabitsToday / $totalHabits checked in today",
+                title = "Alışkanlık Takip Oranı",
+                valueText = "Bugün $completedHabitsToday / $totalHabits tamamlandı",
                 percentage = habitCompletionPct,
                 icon = Icons.Default.LocalFireDepartment,
                 color = MaterialTheme.colorScheme.secondary
             )
+        }
+
+        // Category & Priority Distribution Card
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PieChart,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Görev Kategorileri Dağılımı",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    if (totalTasks == 0) {
+                        Text(
+                            text = "Henüz kategori verisi yok.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    } else {
+                        val categories = listOf("Kişisel", "İş", "Öğrenme", "Sağlık", "Genel")
+                        categories.forEach { category ->
+                            val count = tasks.count { it.category.equals(category, ignoreCase = true) }
+                            if (count > 0) {
+                                val ratio = count.toFloat() / totalTasks
+                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = category,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = "$count (%${(ratio * 100).toInt()})",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    LinearProgressIndicator(
+                                        progress = { ratio },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp)
+                                            .clip(CircleShape),
+                                        color = MaterialTheme.colorScheme.primary,
+                                        trackColor = MaterialTheme.colorScheme.surface
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         item {
@@ -171,12 +244,12 @@ fun AnalyticsScreen(
                         }
                         Column {
                             Text(
-                                text = "Knowledge & Notes",
+                                text = "Bilgi Deposu ve Notlar",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "$totalNotes total saved ($pinnedNotesCount pinned)",
+                                text = "Toplam $totalNotes kayıtlı ($pinnedNotesCount iğnelenmiş)",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -204,14 +277,14 @@ fun AnalyticsScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "Daily Reflection",
+                            text = "Günün Sözü",
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
                     Text(
-                        text = "\"Success is the sum of small efforts repeated day in and day out.\"",
+                        text = "\"Başarı, her gün tekrarlanan küçük çabaların toplamıdır.\"",
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium
                     )

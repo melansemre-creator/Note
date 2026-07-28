@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,13 +37,15 @@ fun HomeScreen(
     onNavigateToHabits: () -> Unit,
     onNavigateToNotes: () -> Unit
 ) {
-    val completedTasksCount = tasks.count { it.isCompleted }
+    val completedTasksCount = remember(tasks) { tasks.count { it.isCompleted } }
     val totalTasksCount = tasks.size
-    val pendingTasks = tasks.filter { !it.isCompleted }.take(4)
-    val todayHabits = habits.take(4)
+    val pendingTasks = remember(tasks) { tasks.filter { !it.isCompleted }.take(4) }
+    val todayHabits = remember(habits) { habits.take(4) }
 
-    val dateFormat = SimpleDateFormat("EEEE, MMMM d", Locale.getDefault())
-    val currentDateStr = dateFormat.format(Date())
+    val currentDateStr = remember {
+        val dateFormat = SimpleDateFormat("EEEE, d MMMM", Locale("tr", "TR"))
+        dateFormat.format(Date())
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -81,7 +84,7 @@ fun HomeScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = "Welcome Back!",
+                                    text = "Hoş Geldiniz!",
                                     style = MaterialTheme.typography.titleLarge,
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     fontWeight = FontWeight.Bold
@@ -99,7 +102,7 @@ fun HomeScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
-                                        imageVector = Icons.Default.Sparkles,
+                                        imageVector = Icons.Default.AutoAwesome,
                                         contentDescription = "Hub",
                                         tint = MaterialTheme.colorScheme.onPrimary
                                     )
@@ -122,12 +125,12 @@ fun HomeScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "Daily Completion",
+                                        text = "Günlük Tamamlama",
                                         style = MaterialTheme.typography.labelLarge,
                                         color = MaterialTheme.colorScheme.onPrimary
                                     )
                                     Text(
-                                        text = "${(progressPct * 100).toInt()}% ($completedTasksCount/$totalTasksCount)",
+                                        text = "%${(progressPct * 100).toInt()} ($completedTasksCount/$totalTasksCount)",
                                         style = MaterialTheme.typography.labelLarge,
                                         color = MaterialTheme.colorScheme.onPrimary,
                                         fontWeight = FontWeight.Bold
@@ -157,7 +160,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 StatCard(
-                    title = "Pending Tasks",
+                    title = "Bekleyen Görev",
                     value = "${totalTasksCount - completedTasksCount}",
                     icon = Icons.Default.CheckCircleOutline,
                     color = MaterialTheme.colorScheme.primary,
@@ -165,7 +168,7 @@ fun HomeScreen(
                     onClick = onNavigateToTasks
                 )
                 StatCard(
-                    title = "Habits Active",
+                    title = "Aktif Alışkanlık",
                     value = "${habits.size}",
                     icon = Icons.Default.LocalFireDepartment,
                     color = MaterialTheme.colorScheme.secondary,
@@ -173,8 +176,8 @@ fun HomeScreen(
                     onClick = onNavigateToHabits
                 )
                 StatCard(
-                    title = "Notes Saved",
-                    value = "Hub Notes",
+                    title = "Kayıtlı Notlar",
+                    value = "Tüm Notlar",
                     icon = Icons.Default.StickyNote2,
                     color = MaterialTheme.colorScheme.tertiary,
                     modifier = Modifier.weight(1f),
@@ -191,12 +194,12 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Today's Focus Tasks",
+                    text = "Bugünün Odak Görevleri",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
                 TextButton(onClick = onNavigateToTasks) {
-                    Text("View All")
+                    Text("Tümünü Gör")
                 }
             }
         }
@@ -218,14 +221,14 @@ fun HomeScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "All focus tasks completed! Great work today.",
+                            text = "Tüm odak görevleri tamamlandı! Harika bir gün.",
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 }
             }
         } else {
-            items(pendingTasks, key = { it.id }) { task ->
+            items(pendingTasks, key = { "task_${it.id}" }) { task ->
                 TaskRowItem(task = task, onToggle = { onToggleTask(task) })
             }
         }
@@ -239,17 +242,17 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Habit Check-Ins",
+                    text = "Alışkanlık Takibi",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold
                 )
                 TextButton(onClick = onNavigateToHabits) {
-                    Text("Manage")
+                    Text("Yönet")
                 }
             }
         }
 
-        items(todayHabits, key = { it.id }) { habit ->
+        items(todayHabits, key = { "habit_${it.id}" }) { habit ->
             HabitRowItem(habit = habit, onToggle = { onToggleHabit(habit) })
         }
     }
@@ -323,7 +326,7 @@ fun TaskRowItem(task: Task, onToggle: () -> Unit) {
                     color = if (task.isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f) else MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "${task.category} • ${task.priority} Priority",
+                    text = "${task.category} • ${task.priority} Öncelik",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -363,7 +366,7 @@ fun HabitRowItem(habit: Habit, onToggle: () -> Unit) {
                 ) {
                     Icon(
                         imageVector = if (habit.completedToday) Icons.Default.Check else Icons.Default.LocalFireDepartment,
-                        contentDescription = "Check habit",
+                        contentDescription = "Alışkanlık işaretle",
                         tint = if (habit.completedToday) Color.White else MaterialTheme.colorScheme.primary
                     )
                 }
@@ -374,7 +377,7 @@ fun HabitRowItem(habit: Habit, onToggle: () -> Unit) {
                         fontWeight = FontWeight.Medium
                     )
                     Text(
-                        text = "🔥 ${habit.streakCount} day streak",
+                        text = "🔥 ${habit.streakCount} günlük seri",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.secondary
                     )

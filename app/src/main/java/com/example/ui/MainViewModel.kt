@@ -22,22 +22,22 @@ class MainViewModel(private val repository: HubRepository) : ViewModel() {
         viewModelScope.launch {
             tasks.first().let { currentTasks ->
                 if (currentTasks.isEmpty()) {
-                    repository.insertTask(Task(title = "Welcome to My Hub!", category = "Personal", priority = "High"))
-                    repository.insertTask(Task(title = "Organize workspace", category = "Work", priority = "Medium"))
-                    repository.insertTask(Task(title = "Read 15 minutes", category = "Learning", priority = "Low"))
+                    repository.insertTask(Task(title = "Uygulamaya Hoş Geldiniz!", category = "Kişisel", priority = "Yüksek"))
+                    repository.insertTask(Task(title = "Haftalık çalışma planını düzenle", category = "İş", priority = "Orta"))
+                    repository.insertTask(Task(title = "Günde 15 dakika kitap oku", category = "Öğrenme", priority = "Düşük"))
                 }
             }
             habits.first().let { currentHabits ->
                 if (currentHabits.isEmpty()) {
-                    repository.insertHabit(Habit(title = "Morning Stretch & Mindfulness", category = "Health", streakCount = 3, completedToday = false))
-                    repository.insertHabit(Habit(title = "Drink 2L Water", category = "Health", streakCount = 5, completedToday = true))
-                    repository.insertHabit(Habit(title = "Write Daily Note", category = "Mindset", streakCount = 2, completedToday = false))
+                    repository.insertHabit(Habit(title = "Sabah Egzersizi & Meditasyon", category = "Sağlık", streakCount = 3, completedToday = false))
+                    repository.insertHabit(Habit(title = "Günde 2 Litre Su İç", category = "Sağlık", streakCount = 5, completedToday = true))
+                    repository.insertHabit(Habit(title = "Günlük Not Oluştur", category = "Zihin", streakCount = 2, completedToday = false))
                 }
             }
             notes.first().let { currentNotes ->
                 if (currentNotes.isEmpty()) {
-                    repository.insertNote(Note(title = "🚀 Welcome Note", content = "My Hub is your personal space to stay organized, track habits, and capture ideas in one sleek app.", category = "Ideas", isPinned = true))
-                    repository.insertNote(Note(title = "💡 App Ideas", content = "1. Clean UI layout\n2. Reactive Room storage\n3. Habit streak visualizer", category = "Projects", isPinned = false))
+                    repository.insertNote(Note(title = "🚀 Hoş Geldiniz", content = "Not ve İş Takip uygulaması, fikirlerinizi kaydetmeniz, alışkanlıklarınızı takip etmeniz ve günlük verimliliğinizi artırmanız için tasarlandı.", category = "Fikirler", isPinned = true))
+                    repository.insertNote(Note(title = "💡 Proje Notları", content = "1. Temiz ve modern Jetpack Compose arayüzü\n2. Hızlı Room veritabanı desteği\n3. Verimlilik analitiği", category = "Projeler", isPinned = false))
                 }
             }
         }
@@ -46,6 +46,12 @@ class MainViewModel(private val repository: HubRepository) : ViewModel() {
     fun addTask(title: String, category: String, priority: String) {
         viewModelScope.launch {
             repository.insertTask(Task(title = title, category = category, priority = priority))
+        }
+    }
+
+    fun updateTask(task: Task) {
+        viewModelScope.launch {
+            repository.updateTask(task)
         }
     }
 
@@ -61,9 +67,21 @@ class MainViewModel(private val repository: HubRepository) : ViewModel() {
         }
     }
 
+    fun clearCompletedTasks() {
+        viewModelScope.launch {
+            repository.deleteCompletedTasks()
+        }
+    }
+
     fun addHabit(title: String, category: String) {
         viewModelScope.launch {
             repository.insertHabit(Habit(title = title, category = category))
+        }
+    }
+
+    fun updateHabit(habit: Habit) {
+        viewModelScope.launch {
+            repository.updateHabit(habit)
         }
     }
 
@@ -90,6 +108,12 @@ class MainViewModel(private val repository: HubRepository) : ViewModel() {
     fun addNote(title: String, content: String, category: String, isPinned: Boolean) {
         viewModelScope.launch {
             repository.insertNote(Note(title = title, content = content, category = category, isPinned = isPinned, updatedAt = System.currentTimeMillis()))
+        }
+    }
+
+    fun updateNote(note: Note) {
+        viewModelScope.launch {
+            repository.updateNote(note.copy(updatedAt = System.currentTimeMillis()))
         }
     }
 
