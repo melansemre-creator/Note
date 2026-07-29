@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "My Hub"
+rootProject.name = "Not ve İş Takip"
 include(":app")
